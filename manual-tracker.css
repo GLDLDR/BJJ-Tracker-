@@ -1,0 +1,243 @@
+:root {
+  color-scheme: dark;
+  --bg: #0f1418;
+  --surface: rgba(21, 28, 34, 0.92);
+  --surface-strong: #1c252d;
+  --text: #edf1ea;
+  --muted: #a2b0b4;
+  --accent: #d36a3b;
+  --accent-dark: #f09a69;
+  --line: rgba(237, 241, 234, 0.1);
+  --shadow: 0 22px 48px rgba(0, 0, 0, 0.34);
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-sm: 14px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(211, 106, 59, 0.18), transparent 22%),
+    linear-gradient(180deg, #172028 0%, var(--bg) 100%);
+}
+
+.page-shell {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 28px 0 44px;
+}
+
+.hero,
+.dashboard,
+.form-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.hero {
+  grid-template-columns: 1.2fr 0.8fr;
+  margin-bottom: 22px;
+}
+
+.hero__copy h1 {
+  margin: 0 0 16px;
+  max-width: 11ch;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(2.8rem, 5vw, 4.8rem);
+  line-height: 0.94;
+}
+
+.hero__body,
+.panel p,
+.card-list p,
+.plan-board {
+  color: var(--muted);
+}
+
+.hero__link {
+  color: var(--accent-dark);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent-dark);
+  margin: 0 0 12px;
+}
+
+.dashboard {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.panel,
+.hero__card,
+.focus-card,
+.card-list li,
+.plan-board,
+.empty-state {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.panel,
+.hero__card {
+  padding: 24px;
+}
+
+.panel--wide {
+  grid-column: span 2;
+}
+
+.panel__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 18px;
+}
+
+.stack-form,
+.form-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.form-grid__full {
+  grid-column: span 2;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid rgba(237, 241, 234, 0.12);
+  border-radius: var(--radius-sm);
+  background: var(--surface-strong);
+  color: var(--text);
+  padding: 12px 14px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.button,
+.ghost-button {
+  border-radius: 999px;
+  padding: 11px 16px;
+  cursor: pointer;
+}
+
+.button {
+  border: 0;
+  color: white;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+}
+
+.ghost-button {
+  border: 1px solid rgba(237, 241, 234, 0.12);
+  background: rgba(31, 40, 48, 0.86);
+  color: var(--text);
+}
+
+.focus-card,
+.plan-board,
+.card-list li,
+.suggestion-preview,
+.empty-state {
+  padding: 16px;
+}
+
+.card-list {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 0;
+  display: grid;
+  gap: 12px;
+}
+
+.list-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.inline-label {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.suggestion-preview {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: rgba(29, 38, 46, 0.88);
+}
+
+.suggestion-preview strong {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.suggestion-preview ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+}
+
+.suggestion-preview li + li {
+  margin-top: 8px;
+}
+
+.suggestion-preview span {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.plan-board ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+@media (max-width: 900px) {
+  .hero,
+  .dashboard,
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .panel--wide,
+  .form-grid__full {
+    grid-column: auto;
+  }
+}
