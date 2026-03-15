@@ -333,6 +333,8 @@ textarea {
 .coach-card,
 .inset-card,
 .self-test__output,
+.progress-card,
+.struggle-card,
 .list li,
 .timeline__item {
   border-radius: var(--radius-md);
@@ -348,6 +350,67 @@ textarea {
 .self-test {
   display: grid;
   gap: 14px;
+}
+
+.progress-board,
+.struggle-list {
+  display: grid;
+  gap: 14px;
+}
+
+.progress-card,
+.struggle-card {
+  padding: 16px;
+}
+
+.progress-card span,
+.struggle-card__eyebrow {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+}
+
+.progress-card strong,
+.struggle-card strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.progress-card p,
+.struggle-card p,
+.struggle-card__list {
+  margin: 0;
+  color: var(--muted);
+}
+
+.struggle-card__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: start;
+  margin-bottom: 10px;
+}
+
+.struggle-card__top h3 {
+  margin: 0;
+}
+
+.struggle-card__list {
+  margin-top: 12px;
+  padding-left: 18px;
+}
+
+.struggle-card__list li + li {
+  margin-top: 8px;
+}
+
+.struggle-card__list span {
+  color: var(--text);
+  font-weight: 700;
 }
 
 .self-test__output {

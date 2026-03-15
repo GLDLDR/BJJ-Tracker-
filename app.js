@@ -74,6 +74,8 @@ const goalList = document.querySelector("#goal-list");
 const techniqueList = document.querySelector("#technique-list");
 const studyList = document.querySelector("#study-list");
 const coachCard = document.querySelector("#coach-card");
+const progressBoard = document.querySelector("#progress-board");
+const struggleList = document.querySelector("#struggle-list");
 const weeklyGrid = document.querySelector("#weekly-grid");
 const gamePlan = document.querySelector("#game-plan");
 const focusStrip = document.querySelector("#focus-strip");
@@ -413,6 +415,8 @@ function render() {
   renderTechniques();
   renderStudyItems();
   renderStats();
+  renderProgressBoard();
+  renderStruggleAreas();
   renderWeeklyGrid();
   renderGamePlan();
   renderCoach();
@@ -594,6 +598,44 @@ function renderStats() {
   statProblem.textContent = topLabel(problemCounts, "None yet");
 }
 
+function renderProgressBoard() {
+  const summary = buildProgressSummary();
+
+  progressBoard.innerHTML = summary.length
+    ? summary.map((item) => `
+        <article class="progress-card">
+          <span>${escapeHtml(item.label)}</span>
+          <strong>${escapeHtml(item.value)}</strong>
+          <p>${escapeHtml(item.note)}</p>
+        </article>
+      `).join("")
+    : '<div class="empty-state">Log a few sessions and wins to start seeing progress signals here.</div>';
+}
+
+function renderStruggleAreas() {
+  const struggles = buildStruggleAreas();
+
+  struggleList.innerHTML = struggles.length
+    ? struggles.map((item) => `
+        <article class="struggle-card">
+          <div class="struggle-card__top">
+            <div>
+              <span class="struggle-card__eyebrow">${escapeHtml(item.position)} • ${escapeHtml(item.problemTag)}</span>
+              <h3>${escapeHtml(item.title)}</h3>
+            </div>
+            <strong>${escapeHtml(item.recurrence)}</strong>
+          </div>
+          <p>${escapeHtml(item.summary)}</p>
+          <ul class="struggle-card__list">
+            <li><span>Why it may be happening:</span> ${escapeHtml(item.cause)}</li>
+            <li><span>Suggested drill:</span> ${escapeHtml(item.drill)}</li>
+            <li><span>What to test next:</span> ${escapeHtml(item.nextTest)}</li>
+          </ul>
+        </article>
+      `).join("")
+    : '<div class="empty-state">Recurring struggle areas will show up after you log repeated problems in your sessions.</div>';
+}
+
 function renderWeeklyGrid() {
   weeklyGrid.innerHTML = "";
   const counts = buildRecentDayCounts(state.sessions, 21);
@@ -744,6 +786,100 @@ function buildGamePlan() {
   }
 
   return items.slice(0, 6);
+}
+
+function buildProgressSummary() {
+  if (!state.sessions.length) {
+    return [];
+  }
+
+  const recentSessions = state.sessions.slice(0, 5);
+  const wins = recentSessions.filter((session) => session.wins).length;
+  const studyTargets = recentSessions.filter((session) => session.studyTarget).length;
+  const positionCounts = countValues(recentSessions.map((session) => session.position).filter(Boolean));
+  const problemCounts = countValues(recentSessions.map((session) => session.problemTag).filter(Boolean));
+  const strongestTheme = topLabel(positionCounts, "No position yet");
+  const mainLeak = topLabel(problemCounts, "No leak yet");
+  const winRateSignal = wins >= 3 ? "Trending up" : wins >= 1 ? "Building slowly" : "Need more success reps";
+  const studySignal = studyTargets >= 3 ? "Active review loop" : studyTargets >= 1 ? "Some review in motion" : "Add clearer study targets";
+
+  return [
+    {
+      label: "Recent momentum",
+      value: winRateSignal,
+      note: `${wins} of your last ${recentSessions.length} sessions logged something that worked.`
+    },
+    {
+      label: "Most active position",
+      value: strongestTheme,
+      note: "This is the part of your game getting the most recent reps."
+    },
+    {
+      label: "Main leak",
+      value: mainLeak,
+      note: "Your recent logs point here as the most repeated friction point."
+    },
+    {
+      label: "Review discipline",
+      value: studySignal,
+      note: `${studyTargets} recent sessions included a specific study target.`
+    }
+  ];
+}
+
+function buildStruggleAreas() {
+  const recentSessions = state.sessions.slice(0, 10).filter((session) => session.lessons || session.problemTag);
+  const groups = new Map();
+
+  recentSessions.forEach((session) => {
+    const key = `${session.position}|${session.problemTag}`;
+    const existing = groups.get(key) || {
+      position: session.position || "General",
+      problemTag: session.problemTag || "Recurring issue",
+      lessons: [],
+      count: 0,
+      latestDate: session.date,
+      homeIdeas: [],
+      studyTargets: []
+    };
+
+    existing.count += 1;
+    existing.latestDate = session.date > existing.latestDate ? session.date : existing.latestDate;
+    if (session.lessons) {
+      existing.lessons.push(session.lessons);
+    }
+    if (session.homeIdea) {
+      existing.homeIdeas.push(session.homeIdea);
+    }
+    if (session.studyTarget) {
+      existing.studyTargets.push(session.studyTarget);
+    }
+    groups.set(key, existing);
+  });
+
+  return [...groups.values()]
+    .filter((item) => item.count >= 2 || item.lessons.length >= 2)
+    .sort((a, b) => b.count - a.count || new Date(b.latestDate) - new Date(a.latestDate))
+    .slice(0, 4)
+    .map((item) => {
+      const lesson = item.lessons[0] || `${item.problemTag} keeps surfacing`;
+      const drill = item.homeIdeas[0] || getStruggleSuggestion(item.position, item.problemTag).drill;
+      const suggestion = getStruggleSuggestion(item.position, item.problemTag);
+      const studyTarget = item.studyTargets[0];
+
+      return {
+        title: lesson,
+        position: item.position,
+        problemTag: item.problemTag,
+        recurrence: `${item.count} recent logs`,
+        summary: `This issue keeps showing up in ${item.position.toLowerCase()} work, so it deserves focused reps instead of general review.`,
+        cause: suggestion.cause,
+        drill: drill || suggestion.drill,
+        nextTest: studyTarget
+          ? `In your next live round, test ${studyTarget.toLowerCase()} before switching to anything else.`
+          : suggestion.nextTest
+      };
+    });
 }
 
 function fillSessionForm(session) {
@@ -974,6 +1110,38 @@ function getSmartDrills(session) {
     "3 x 30 seconds technical standups",
     session.homeIdea || `2 x 10 slow shadow reps for ${session.studyTarget || "your main movement pattern"}`
   ];
+}
+
+function getStruggleSuggestion(position, problemTag) {
+  const key = `${position}|${problemTag}`;
+  const suggestions = {
+    "Guard|Guard retention": {
+      cause: "Your frames and knee line may be arriving late, so the passer is settling chest pressure before you recover angle.",
+      drill: "3 x 10 elbow-knee connection reps into square recoveries.",
+      nextTest: "Use your first two rounds to win inside position earlier and recover before you are flat."
+    },
+    "Half Guard|Frames breaking down": {
+      cause: "Your top frame may be collapsing before your hips can move underneath you.",
+      drill: "3 x 12 frame-to-knee-shield entries with a pause at full structure.",
+      nextTest: "Prioritize head position and top-frame integrity before chasing the underhook."
+    },
+    "Side Control|Escapes timing": {
+      cause: "You may be bridging after the crossface is fully settled instead of disrupting earlier.",
+      drill: "3 x 10 bridge-shrimp combos focusing on the first frame arriving before the hip escape.",
+      nextTest: "In live rounds, treat the first beat of chest pressure as your cue to frame and move."
+    },
+    "Standing|Takedown entries": {
+      cause: "Your feet may be too square or your level change is visible before you penetrate.",
+      drill: "3 x 10 level change to penetration-step shadow reps with angle steps.",
+      nextTest: "Hide the shot behind hand fighting and commit to one clean entry in each round."
+    }
+  };
+
+  return suggestions[key] || {
+    cause: "This looks like a timing and structure problem that needs slower, more specific reps before harder rounds.",
+    drill: "Do 3 sets of slow shadow reps for the exact position that keeps failing, then add movement quality work.",
+    nextTest: "Pick one cue for the next class and judge success only by whether you hit that cue on time."
+  };
 }
 
 function buildRecentDayCounts(sessions, length) {
