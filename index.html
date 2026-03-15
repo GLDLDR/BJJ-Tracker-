@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roll Journal</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero__copy">
+        <p class="eyebrow">Brazilian Jiu Jitsu Training Journal</p>
+        <h1>Build your game, not just your notes.</h1>
+        <p class="hero__body">
+          Roll Journal is a local-first BJJ tracker for logging sessions, shaping your A-game,
+          reviewing what keeps happening in live rounds, and turning that into useful solo work.
+        </p>
+        <div class="hero__actions">
+          <button class="button" type="button" id="jump-to-log">Log a session</button>
+          <button class="ghost-button" type="button" id="export-data">Export journal</button>
+          <label class="ghost-button ghost-button--file">
+            Import journal
+            <input type="file" id="import-data" accept="application/json">
+          </label>
+        </div>
+      </div>
+
+      <aside class="hero__focus surface">
+        <p class="hero__label">Today’s training cue</p>
+        <h2 id="today-focus">Log a session and your next rep target will show up here.</h2>
+        <p id="focus-support">
+          Your latest sessions, current game plan, and study queue will combine into a focused next step.
+        </p>
+        <div class="focus-strip" id="focus-strip"></div>
+      </aside>
+    </header>
+
+    <main class="dashboard">
+      <section class="surface panel">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Game Profile</p>
+            <h2>Define the player you are building</h2>
+          </div>
+          <p class="panel__hint">This keeps the rest of the app centered on your actual game instead of random technique collecting.</p>
+        </div>
+
+        <form id="profile-form" class="stack-form">
+          <label>
+            Name or nickname
+            <input type="text" id="profile-name" placeholder="Aaron">
+          </label>
+          <div class="two-up">
+            <label>
+              Belt rank
+              <select id="profile-belt">
+                <option>White</option>
+                <option>Blue</option>
+                <option>Purple</option>
+                <option>Brown</option>
+                <option>Black</option>
+              </select>
+            </label>
+            <label>
+              Academy
+              <input type="text" id="profile-academy" placeholder="Your gym">
+            </label>
+          </div>
+          <label>
+            A-game description
+            <textarea id="profile-game" rows="3" placeholder="Pressure passing into mount, or wrestle-up from seated guard into top control."></textarea>
+          </label>
+          <label>
+            Current season goal
+            <textarea id="profile-focus" rows="3" placeholder="Sharpen half guard retention and chain into knee shield recoveries."></textarea>
+          </label>
+          <label>
+            What I am working on now
+            <input type="text" id="profile-working-on" placeholder="Knee shield retention against heavy pressure">
+          </label>
+          <div class="branch-grid">
+            <label>
+              Primary attack
+              <input type="text" id="profile-primary-branches" placeholder="Underhook to dogfight, knee lever entry">
+            </label>
+            <label>
+              Secondary attack
+              <input type="text" id="profile-secondary-branches" placeholder="Wrestle-up single, arm drag to back">
+            </label>
+            <label>
+              Fallback
+              <input type="text" id="profile-fallback-branches" placeholder="Recover closed guard, re-pummel inside position">
+            </label>
+            <label>
+              Escape route
+              <input type="text" id="profile-escape-branches" placeholder="Technical standup, elbow-knee recovery">
+            </label>
+          </div>
+          <button class="button" type="submit">Save profile</button>
+        </form>
+        <div id="profile-card" class="profile-card"></div>
+      </section>
+
+      <section class="surface panel">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Current Path</p>
+            <h2>What you are building right now</h2>
+          </div>
+          <p class="panel__hint">Use this like a mini game tree: current focus first, then your best next branches.</p>
+        </div>
+        <div id="path-card" class="path-card"></div>
+      </section>
+
+      <section class="surface panel">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Self-Test</p>
+            <h2>Check the path flow</h2>
+          </div>
+          <p class="panel__hint">Runs a quick in-app smoke test for grouped branches and click-to-promote behavior.</p>
+        </div>
+        <div class="self-test">
+          <button class="button" type="button" id="run-self-test">Run self-test</button>
+          <div id="self-test-output" class="self-test__output empty-state">No self-test has been run yet.</div>
+        </div>
+      </section>
+
+      <section class="surface panel panel--wide" id="log-panel">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Training Log</p>
+            <h2>Capture the reps that should shape your game</h2>
+          </div>
+          <p class="panel__hint">Log what happened, what repeated, and what deserves study before your next class.</p>
+        </div>
+
+        <form id="session-form" class="form-grid">
+          <input type="hidden" id="session-id">
+          <label>
+            Date
+            <input type="date" id="session-date" required>
+          </label>
+          <label>
+            Session type
+            <select id="session-type">
+              <option>Class</option>
+              <option>Open Mat</option>
+              <option>Competition Training</option>
+              <option>Private Lesson</option>
+              <option>Drilling Session</option>
+              <option>Strength & Mobility</option>
+            </select>
+          </label>
+          <label>
+            Duration (minutes)
+            <input type="number" id="session-duration" min="15" max="240" value="75" required>
+          </label>
+          <label>
+            Intensity
+            <select id="session-intensity">
+              <option>Flow</option>
+              <option selected>Moderate</option>
+              <option>Hard</option>
+              <option>Competition Pace</option>
+            </select>
+          </label>
+          <label>
+            Energy
+            <select id="session-energy">
+              <option>High</option>
+              <option selected>Medium</option>
+              <option>Low</option>
+            </select>
+          </label>
+          <label>
+            Position
+            <select id="session-position">
+              <option>Guard</option>
+              <option>Half Guard</option>
+              <option>Side Control</option>
+              <option>Mount</option>
+              <option>Back</option>
+              <option>Turtle</option>
+              <option>Standing</option>
+              <option>Scramble</option>
+            </select>
+          </label>
+          <label>
+            Main problem
+            <select id="session-problem-tag">
+              <option>Frames breaking down</option>
+              <option>Guard retention</option>
+              <option>Escapes timing</option>
+              <option>Grip fighting</option>
+              <option>Balance and base</option>
+              <option>Finishing mechanics</option>
+              <option>Takedown entries</option>
+              <option>Cardio pacing</option>
+            </select>
+          </label>
+          <label>
+            Rounds rolled
+            <input type="number" id="session-rounds" min="0" max="20" value="5" required>
+          </label>
+          <label>
+            Success rating
+            <select id="session-roll-quality">
+              <option>Felt sharp</option>
+              <option selected>Mixed</option>
+              <option>Tough night</option>
+            </select>
+          </label>
+          <label>
+            Training partner note
+            <input type="text" id="session-partner" placeholder="Strong pressure passer, flexible guard player, coach round">
+          </label>
+          <label class="form-grid__full">
+            Techniques worked
+            <input type="text" id="session-techniques" placeholder="Knee cut pass, tripod sweep, armbar from closed guard">
+          </label>
+          <label class="form-grid__full">
+            What worked
+            <textarea id="session-wins" rows="3" placeholder="Where did you get to your positions, finish, or escape well?"></textarea>
+          </label>
+          <label class="form-grid__full">
+            What kept going wrong
+            <textarea id="session-lessons" rows="3" placeholder="What positions, reactions, or failures kept repeating in live rounds?"></textarea>
+          </label>
+          <label class="form-grid__full">
+            Specific study item
+            <input type="text" id="session-study-target" placeholder="Late-stage knee shield recovery, back escape hand-fighting, arm drag to single">
+          </label>
+          <label class="form-grid__full">
+            Solo drill idea
+            <textarea id="session-home-idea" rows="3" placeholder="3 rounds of hip escape to knee shield recoveries plus 20 slow-motion shadow reps."></textarea>
+          </label>
+          <div class="form-actions form-grid__full">
+            <button class="button" type="submit" id="session-submit">Save session</button>
+            <button class="ghost-button" type="button" id="session-cancel" hidden>Cancel edit</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="surface panel">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Current Goals</p>
+            <h2>Keep your next layer visible</h2>
+          </div>
+        </div>
+        <form id="goal-form" class="stack-form">
+          <label>
+            Goal
+            <input type="text" id="goal-title" placeholder="Recover knee shield before pressure settles" required>
+          </label>
+          <label>
+            Why this matters
+            <textarea id="goal-note" rows="3" placeholder="This is the hole better passers keep exploiting."></textarea>
+          </label>
+          <button class="button" type="submit">Add goal</button>
+        </form>
+        <ul id="goal-list" class="list"></ul>
+      </section>
+
+      <section class="surface panel">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Technique Bank</p>
+            <h2>Store the details that matter</h2>
+          </div>
+        </div>
+        <form id="technique-form" class="stack-form">
+          <label>
+            Technique
+            <input type="text" id="technique-name" placeholder="Cross collar choke from mount" required>
+          </label>
+          <label>
+            Category
+            <select id="technique-category">
+              <option>Guard</option>
+              <option>Pass</option>
+              <option>Submission</option>
+              <option>Takedown</option>
+              <option>Escape</option>
+              <option>Transition</option>
+            </select>
+          </label>
+          <label>
+            Key detail
+            <textarea id="technique-detail" rows="3" placeholder="Pin the elbow before you feed the second hand."></textarea>
+          </label>
+          <button class="button" type="submit">Save technique</button>
+        </form>
+        <ul id="technique-list" class="list"></ul>
+      </section>
+
+      <section class="surface panel">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Study Queue</p>
+            <h2>Turn recurring problems into review reps</h2>
+          </div>
+        </div>
+        <form id="study-form" class="stack-form">
+          <label>
+            Study item
+            <input type="text" id="study-title" placeholder="Back escape hand-fight sequence" required>
+          </label>
+          <label>
+            Source
+            <select id="study-source">
+              <option>Session review</option>
+              <option>Coach note</option>
+              <option>Video study</option>
+              <option>Competition prep</option>
+            </select>
+          </label>
+          <label>
+            Next action
+            <textarea id="study-action" rows="3" placeholder="Watch one instruction clip and do 30 slow reps before class."></textarea>
+          </label>
+          <button class="button" type="submit">Add study item</button>
+        </form>
+        <ul id="study-list" class="list"></ul>
+      </section>
+
+      <section class="surface panel">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Home Coach</p>
+            <h2>What to train when you miss class</h2>
+          </div>
+        </div>
+        <div id="coach-card" class="coach-card"></div>
+      </section>
+
+      <section class="surface panel panel--wide">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Progress Snapshot</p>
+            <h2>Consistency, volume, and live-round patterns</h2>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <article class="stat">
+            <span>Total sessions</span>
+            <strong id="stat-sessions">0</strong>
+          </article>
+          <article class="stat">
+            <span>Mat hours</span>
+            <strong id="stat-hours">0</strong>
+          </article>
+          <article class="stat">
+            <span>Total rounds</span>
+            <strong id="stat-rounds">0</strong>
+          </article>
+          <article class="stat">
+            <span>Current streak</span>
+            <strong id="stat-streak">0 days</strong>
+          </article>
+          <article class="stat">
+            <span>Most trained theme</span>
+            <strong id="stat-theme">None yet</strong>
+          </article>
+          <article class="stat">
+            <span>Biggest review area</span>
+            <strong id="stat-problem">None yet</strong>
+          </article>
+        </div>
+
+        <div class="insight-grid">
+          <div class="surface inset-card">
+            <h3>Weekly consistency</h3>
+            <div id="weekly-grid" class="weekly-grid"></div>
+          </div>
+          <div class="surface inset-card">
+            <h3>Game plan</h3>
+            <div id="game-plan" class="game-plan"></div>
+          </div>
+        </div>
+
+        <div class="timeline-wrap">
+          <h3>Recent sessions</h3>
+          <ul id="session-list" class="timeline"></ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <template id="session-item-template">
+    <li class="timeline__item">
+      <div class="timeline__date"></div>
+      <div class="timeline__content">
+        <div class="timeline__topline"></div>
+        <div class="timeline__tags"></div>
+        <p class="timeline__techniques"></p>
+        <p class="timeline__wins"></p>
+        <p class="timeline__lessons"></p>
+        <p class="timeline__home"></p>
+        <div class="timeline__actions">
+          <button class="ghost-button timeline__edit" type="button">Edit</button>
+          <button class="ghost-button timeline__delete" type="button">Delete</button>
+        </div>
+      </div>
+    </li>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
