@@ -123,6 +123,27 @@ body::before {
   color: var(--muted);
 }
 
+.tester-note__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 14px;
+  padding: 11px 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #356947, var(--accent-dark));
+  color: white;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(53, 105, 71, 0.32);
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.tester-note__link:hover {
+  transform: translateY(-1px);
+}
+
 .eyebrow,
 .panel h2,
 .button,
