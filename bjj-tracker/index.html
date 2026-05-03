@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roll Journal Manual Tracker</title>
+  <link rel="stylesheet" href="manual-tracker.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero__copy">
+        <p class="eyebrow">BJJ Tracker</p>
+        <h1>Build, Refine, Evolve.</h1>
+        <p class="hero__body">
+          A focused training journal for noticing progress, naming your sticking points, and
+          choosing what to sharpen next.
+        </p>
+        <p class="hero__body">
+          Keep a clearer record of how your game is growing, one round and one adjustment at a time.
+        </p>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <section class="panel panel--wide">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Current Focus</p>
+            <h2>What you are working on right now</h2>
+          </div>
+        </div>
+        <form id="focus-form" class="form-grid">
+          <label class="form-grid__full">
+            Main focus
+            <input type="text" id="focus-title" placeholder="Knee shield retention against pressure" required>
+          </label>
+          <label>
+            Position
+            <select id="focus-position">
+              <option>Guard</option>
+              <option>Half Guard</option>
+              <option>Side Control</option>
+              <option>Mount</option>
+              <option>Back</option>
+              <option>Turtle</option>
+              <option>Standing</option>
+              <option>Scramble</option>
+            </select>
+          </label>
+          <label>
+            Status
+            <select id="focus-status">
+              <option>New</option>
+              <option>Working</option>
+              <option>Improving</option>
+              <option>Sharp</option>
+            </select>
+          </label>
+          <label class="form-grid__full">
+            Why this matters
+            <textarea id="focus-note" rows="3" placeholder="This keeps showing up against heavy pressure passers."></textarea>
+          </label>
+          <button class="button form-grid__full" type="submit">Save focus</button>
+        </form>
+        <div id="focus-card" class="focus-card"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Progress Areas</p>
+            <h2>What is moving forward</h2>
+          </div>
+        </div>
+        <form id="progress-form" class="stack-form">
+          <label>
+            Area
+            <input type="text" id="progress-title" placeholder="Underhook to dogfight entry" required>
+          </label>
+          <label>
+            Current level
+            <select id="progress-status">
+              <option>Just starting</option>
+              <option>Some success</option>
+              <option>Improving</option>
+              <option>Reliable</option>
+            </select>
+          </label>
+          <label>
+            Evidence
+            <textarea id="progress-evidence" rows="3" placeholder="Started hitting it twice in live rounds this week."></textarea>
+          </label>
+          <label>
+            Next step
+            <textarea id="progress-next-step" rows="3" placeholder="Chain it into the wrestle-up instead of stopping at the underhook."></textarea>
+          </label>
+          <button class="button" type="submit">Add progress area</button>
+        </form>
+        <ul id="progress-list" class="card-list"></ul>
+      </section>
+
+      <section class="panel">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Struggle Areas</p>
+            <h2>What keeps breaking down</h2>
+          </div>
+        </div>
+        <form id="struggle-form" class="stack-form">
+          <label>
+            Struggle area
+            <input type="text" id="struggle-title" placeholder="Getting flattened from half guard" required>
+          </label>
+          <label>
+            Severity
+            <select id="struggle-severity">
+              <option>Low</option>
+              <option selected>Medium</option>
+              <option>High</option>
+            </select>
+          </label>
+          <label>
+            What keeps happening
+            <textarea id="struggle-pattern" rows="3" placeholder="My top frame collapses and I lose the knee shield."></textarea>
+          </label>
+          <div id="suggestion-preview" class="suggestion-preview"></div>
+          <label>
+            Why it may be happening
+            <textarea id="struggle-cause" rows="3" placeholder="I am trying to come up too late and my elbow-knee connection is loose."></textarea>
+          </label>
+          <label>
+            Drill or fix
+            <textarea id="struggle-fix" rows="3" placeholder="3 sets of frame-to-knee-shield recovery reps before class."></textarea>
+          </label>
+          <label>
+            Next live-round test
+            <textarea id="struggle-test" rows="3" placeholder="Use the first two rounds to focus only on early frame timing."></textarea>
+          </label>
+          <button class="button" type="submit">Add struggle area</button>
+        </form>
+        <ul id="struggle-items" class="card-list"></ul>
+      </section>
+
+      <section class="panel panel--wide">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Plan</p>
+            <h2>What to do next</h2>
+          </div>
+        </div>
+        <div id="plan-board" class="plan-board"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="manual-tracker.js"></script>
+</body>
+</html>
