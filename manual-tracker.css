@@ -97,6 +97,32 @@ body::before {
   text-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
 }
 
+.tester-note {
+  margin-bottom: 24px;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(183, 240, 169, 0.18);
+  background:
+    linear-gradient(135deg, rgba(183, 240, 169, 0.06), transparent 42%),
+    rgba(19, 32, 25, 0.88);
+  text-align: center;
+  box-shadow: var(--shadow-tight);
+}
+
+.tester-note__eyebrow {
+  margin: 0 0 8px;
+  font-family: "Avenir Next Condensed", "Arial Narrow", "Franklin Gothic Medium", sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-bright);
+}
+
+.tester-note__body {
+  margin: 0;
+  color: var(--muted);
+}
+
 .eyebrow,
 .panel h2,
 .button,
